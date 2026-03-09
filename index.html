@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bio Link - @HANGSC88 | VIP Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 1. CẤU HÌNH & FONT */
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&family=Space+Grotesk:wght@400;700&display=swap');
+
+        :root {
+            --primary: #ff6b00;
+            --primary-glow: #ff8800;
+            --accent: #ff2a00;
+            --dark-bg: #050505;
+            --card-bg: rgba(20, 20, 25, 0.65);
+            --border-gradient: linear-gradient(135deg, rgba(255, 107, 0, 0.8), rgba(255, 42, 0, 0.3));
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--dark-bg);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* --- BACKGROUND MATRIX --- */
+        #matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.8; /* Làm mờ matrix một chút để nội dung chính nổi bật */
+        }
+        
+        /* Lớp phủ Gradient tối góc màn hình (Vignette) */
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, #000 90%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* 2. KHUNG CHÍNH (GLASS CARD 3D) */
+        .container {
+            width: 100%;
+            max-width: 450px;
+            padding: 50px 30px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            
+            /* Glassmorphism Effect VIP */
+            background: var(--card-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5), 
+                        inset 0 0 0 1px rgba(255, 107, 0, 0.1);
+            
+            /* Animation xuất hiện */
+            animation: fadeInUp 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        /* Viền sáng gradient chạy quanh card */
+        .container::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 32px;
+            background: linear-gradient(45deg, transparent, var(--primary), transparent);
+            z-index: -1;
+            opacity: 0.5;
+            animation: rotateBorder 4s linear infinite;
+        }
+
+        /* 3. PROFILE & AVATAR */
+        .profile-section { margin-bottom: 35px; position: relative; }
+
+        .avatar-wrapper {
+            position: relative;
+            width: 130px;
+            height: 130px;
+            margin: 0 auto;
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Vòng xoay năng lượng quanh Avatar */
+        .avatar-glow {
+            position: absolute;
+            top: -10px; left: -10px; right: -10px; bottom: -10px;
+            border-radius: 50%;
+            border: 2px dashed var(--primary);
+            animation: spin 10s linear infinite;
+            pointer-events: none;
+        }
+        
+        .avatar-glow::after {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: var(--primary);
+            border-bottom-color: var(--accent);
+            animation: spinReverse 5s linear infinite;
+        }
+
+        /* Hiệu ứng mũ rơi (giữ lại theo yêu cầu cũ) */
+        .falling-hat {
+            position: absolute;
+            top: -55px;
+            right: -25px;
+            width: 90px;
+            z-index: 20;
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.8));
+            animation: hat-drop 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+            opacity: 0;
+        }
+
+        .user-info { margin-top: 20px; }
+
+        .username {
+            font-size: 1.8rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            /* Gradient Text */
+            background: linear-gradient(to right, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Tích xanh VIP */
+        .verified-badge {
+            font-size: 1.2rem;
+            color: var(--primary);
+            filter: drop-shadow(0 0 5px var(--primary));
+        }
+
+        .bio-text {
+            color: #aaa;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.95rem;
+            margin-top: 8px;
+            background: rgba(0,0,0,0.3);
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* 4. LIÊN KẾT (BUTTONS VIP) */
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .link-btn {
+            position: relative;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 18px 25px;
+            border-radius: 18px;
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Icon trái, text giữa/trái, mũi tên phải */
+            transition: all 0.4s ease;
+            overflow: hidden;
+            opacity: 0;
+            animation: slideUp 0.6s ease forwards;
+        }
+
+        /* Hiệu ứng trượt sáng bóng (Shimmer) */
+        .link-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: 0.5s;
+        }
+
+        .link-btn:hover::before { left: 100%; }
+
+        .link-btn:hover {
+            transform: translateY(-5px) scale(1.02);
+            background: rgba(255, 107, 0, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(255, 107, 0, 0.4);
+        }
+
+        .btn-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-grow: 1;
+        }
+
+        .btn-icon-box {
+            width: 40px; height: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--primary);
+            transition: 0.3s;
+        }
+
+        .link-btn:hover .btn-icon-box {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .btn-img-logo {
+            width: 100%; height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .btn-text {
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .arrow-icon {
+            color: rgba(255,255,255,0.3);
+            transition: 0.3s;
+        }
+        
+        .link-btn:hover .arrow-icon {
+            color: #fff;
+            transform: translateX(5px);
+        }
+
+        /* Stagger animation */
+        .link-btn:nth-child(1) { animation-delay: 0.2s; }
+        .link-btn:nth-child(2) { animation-delay: 0.3s; }
+        .link-btn:nth-child(3) { animation-delay: 0.4s; }
+        .link-btn:nth-child(4) { animation-delay: 0.5s; }
+
+        /* 5. FOOTER */
+        footer {
+            margin-top: 40px;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.4);
+            font-family: 'Space Grotesk', monospace;
+            animation: fadeInUp 1s ease 1s forwards;
+            opacity: 0;
+        }
+
+        footer span { color: var(--primary); font-weight: bold; }
+
+        /* ANIMATIONS */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes hat-drop {
+            0% { transform: translateY(-500px) rotate(45deg); opacity: 0; }
+            60% { transform: translateY(10px) rotate(-10deg); opacity: 1; }
+            100% { transform: translateY(0) rotate(15deg); opacity: 1; }
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes spinReverse { 100% { transform: rotate(-360deg); } }
+        @keyframes rotateBorder { 0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; } }
+
+    </style>
+</head>
+<body>
+
+    <canvas id="matrix-bg"></canvas>
+    <div class="overlay"></div>
+
+    <div class="container" id="tilt-card" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.2">
+        
+        <div class="profile-section">
+            <img src="images-removebg-preview.png" alt="Hat" class="falling-hat">
+            
+            <div class="avatar-wrapper">
+                <div class="avatar-glow"></div>
+                <img src="image_d9a57e.png" alt="Avatar" class="avatar-img">
+            </div>
+            
+            <div class="user-info">
+                <h1 class="username">
+                    @HANGSC88 
+                    <i class="fas fa-check-circle verified-badge" title="Verified VIP"></i>
+                </h1>
+                <p class="bio-text">&lt;/&gt;Marketing • Dev • Creator</p>
+            </div>
+        </div>
+
+        <div class="links">
+            <a href="https://www.sc884.com/?id=394310367" class="link-btn" target="_blank">
+                <div class="btn-content">
+                    <div class="btn-icon-box" style="background: transparent; padding: 2px;">
+                        <img src="sc88-logo.png" alt="Icon" class="btn-img-logo">
+                    </div>
+                    <span class="btn-text">SC88 LINK TỔNG</span>
+                </div>
+                <i class="fas fa-chevron-right arrow-icon"></i>
+            </a>
+
+            <a href="https://www.sc884.com/?id=394310367" class="link-btn" target="_blank">
+                <div class="btn-content">
+                    <div class="btn-icon-box" style="background: transparent; padding: 2px;">
+                        <img src="images-removebg-preview (1).png" alt="Icon" class="btn-img-logo">
+                    </div>
+                    <span class="btn-text">OKVIP ALLIANCE</span>
+                </div>
+                <i class="fas fa-chevron-right arrow-icon"></i>
+            </a>
+
+            <a href="https://t.me/hangsc88" class="link-btn" target="_blank">
+                <div class="btn-content">
+                    <div class="btn-icon-box">
+                        <i class="fab fa-telegram-plane"></i>
+                    </div>
+                    <span class="btn-text">TELE - MINH HẰNG</span>
+                </div>
+                <i class="fas fa-chevron-right arrow-icon"></i>
+            </a>
+            
+            <a href="https://t.me/+qVdVZzNys7tiZjA1" class="link-btn" target="_blank">
+                <div class="btn-content">
+                    <div class="btn-icon-box">
+                        <i class="fas fa-user-secret"></i>
+                    </div>
+                    <span class="btn-text">NHÓM KÉO MỖI NGÀY</span>
+                </div>
+                <i class="fas fa-chevron-right arrow-icon"></i>
+            </a>
+        </div>
+
+        <footer>
+            <p>© 2026 DESIGN BY <span>MINH HẰNG</span></p>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+
+    <script>
+        // 1. Cấu hình Vanilla Tilt (Hiệu ứng nghiêng 3D)
+        VanillaTilt.init(document.querySelector("#tilt-card"), {
+            max: 3,             // Độ nghiêng tối đa
+            speed: 400,         // Tốc độ
+            glare: true,        // Hiệu ứng bóng lóa
+            "max-glare": 0.1,   // Độ sáng bóng lóa
+            scale: 1.02         // Phóng to nhẹ khi hover
+        });
+
+        // 2. MATRIX RAIN EFFECT (Đã tối ưu)
+        const canvas = document.getElementById('matrix-bg');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$#@&%';
+        const charArray = chars.split('');
+        const fontSize = 16;
+        let columns = canvas.width / fontSize;
+        let drops = [];
+
+        function initDrops() {
+            columns = canvas.width / fontSize;
+            drops = [];
+            for(let i = 0; i < columns; i++) {
+                drops[i] = Math.random() * canvas.height / fontSize;
+            }
+        }
+        initDrops();
+
+        function draw() {
+            // Hiệu ứng mờ đuôi (Trail effect) mượt hơn
+            ctx.fillStyle = 'rgba(5, 5, 5, 0.1)'; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.font = fontSize + 'px monospace';
+
+            for(let i = 0; i < drops.length; i++) {
+                // Tạo hiệu ứng màu ngẫu nhiên (Cam pha trắng)
+                const isWhite = Math.random() > 0.95;
+                ctx.fillStyle = isWhite ? '#ffffff' : '#ff6b00';
+                
+                const text = charArray[Math.floor(Math.random() * charArray.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if(drops[i] * fontSize > canvas.height && Math.random() > 0.98) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        setInterval(draw, 40);
+    </script>
+
+</body>
+</html>
